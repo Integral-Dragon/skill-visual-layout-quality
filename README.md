@@ -1,8 +1,8 @@
 # Visual Layout Quality
 
-A reusable visual QA skill for layout-heavy assets.
+A reusable visual build-and-review skill for layout-heavy assets.
 
-It is designed to catch the failure modes that repeatedly show up in generated visuals:
+It is designed to catch the failure modes that repeatedly show up in generated visuals, while also guiding the build itself:
 
 - text that technically fits but feels cramped
 - internal padding collapse
@@ -51,6 +51,7 @@ skill-visual-layout-quality/
     implementation-slides-pdf.md
     implementation-svg.md
     research-notes.md
+    multi-agent-collaboration-loop.md
     review-round-2026-03-31.md
     validation-round.md
   scripts/
@@ -83,9 +84,9 @@ git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git ~/.
 
 ## Usage Notes
 
-Use the skill when generating, reviewing, or debugging any visual artifact where layout quality matters.
+Use the skill when generating, editing, reviewing, or debugging any visual artifact where layout quality matters. The prescriptive part happens during composition: sizing containers, controlling hierarchy, and keeping spacing coherent before export.
 
-The skill now supports an optional second-pass rendered QA round:
+The skill also supports an optional second-pass rendered QA round at the end:
 
 - it estimates how long the extra validation will take
 - it asks before running it unless the task is clearly final/polish/QA work

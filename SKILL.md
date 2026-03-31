@@ -1,12 +1,21 @@
 ---
 name: visual-layout-quality
-description: "Use when creating, editing, reviewing, or debugging visual assets where layout quality matters: SVGs, PNG/JPG-backed graphics, Excalidraw exports, diagrams, README hero images, fixed-layout HTML, infographics, slide decks, and PDFs. Focus on overflow, container sizing, internal padding, spacing rhythm, centering, collisions, clipping, legibility, and rendered-output QA."
+description: "Use when creating, editing, reviewing, or debugging visual assets where layout quality matters: SVGs, PNG/JPG-backed graphics, Excalidraw exports, diagrams, README hero images, fixed-layout HTML, infographics, slide decks, and PDFs. Primary use is prescriptive during composition: container sizing, hierarchy, spacing, and legibility. Optional end-stage rendered QA checks overflow, clipping, collisions, and export fidelity."
 user-invocable: true
 ---
 
 # Visual Layout Quality
 
-Use this skill for any visual artifact where layout can fail after generation, export, or rendering.
+Use this skill for any visual artifact where layout can fail during generation, editing, export, or rendering.
+
+This is a build-and-review skill, not just a QA checklist.
+
+Use it prescriptively while composing the asset:
+
+- size containers from the content they need to hold
+- establish hierarchy and spacing before polishing
+- keep decoration subordinate to content
+- then, if useful, run the optional rendered QA round at the end
 
 This skill is intentionally split into two layers:
 
