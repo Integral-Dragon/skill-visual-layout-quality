@@ -25,7 +25,7 @@ Auto-run without asking when:
 
 - final deliverable quality is clearly required
 - the user already complained about layout issues
-- the current artifact type has a high render-risk profile
+- the current artifact is final-quality and has a high render-risk profile
 
 ## Time Estimation
 
@@ -36,6 +36,7 @@ Use rough, honest bands:
 - small deck or PDF: `3-8 min`
 - medium deck or PDF: `8-20 min`
 - large deck or PDF: `15-40+ min`
+- batch of separate images: `1-2 min` per file, plus setup/export overhead
 
 Increase the estimate when:
 

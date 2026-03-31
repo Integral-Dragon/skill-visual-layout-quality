@@ -31,11 +31,13 @@ This version adds:
 - broader failure classes beyond overflow
 - a clean separation between universal principles and format-specific implementation guidance
 - slide deck and PDF validation guidance
+- font substitution as a first-class layout risk
 - render-and-inspect workflow as a first-class requirement
 - optional second-pass visual validation with time estimation
 - Excalidraw export guidance
 - a lightweight `scripts/svg_layout_audit.py` script for first-pass SVG checks
 - reference material split by incident patterns, external guidance, and validation workflow
+- a checked-in review-round note capturing Claude/Codex/user iteration
 
 ## Repo Layout
 
@@ -49,6 +51,7 @@ skill-visual-layout-quality/
     implementation-slides-pdf.md
     implementation-svg.md
     research-notes.md
+    review-round-2026-03-31.md
     validation-round.md
   scripts/
     svg_layout_audit.py

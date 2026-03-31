@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import math
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -30,6 +29,35 @@ def parse_first_number(value: str | None, fallback: float = 0.0) -> float:
         return fallback
     match = re.search(r"-?\d+(?:\.\d+)?", value)
     return float(match.group(0)) if match else fallback
+
+
+def parse_style(style: str | None) -> dict[str, str]:
+    if not style:
+        return {}
+    result: dict[str, str] = {}
+    for part in style.split(";"):
+        if ":" not in part:
+            continue
+        key, value = part.split(":", 1)
+        result[key.strip()] = value.strip()
+    return result
+
+
+def pick_attr(node: ET.Element, name: str, default: str | None = None) -> str | None:
+    if name in node.attrib:
+        return node.attrib[name]
+    return parse_style(node.attrib.get("style")).get(name, default)
+
+
+def parse_translate(transform: str | None) -> tuple[float, float]:
+    if not transform:
+        return 0.0, 0.0
+    total_x = 0.0
+    total_y = 0.0
+    for match in re.finditer(r"translate\(\s*(-?\d+(?:\.\d+)?)\s*(?:[, ]\s*(-?\d+(?:\.\d+)?))?\s*\)", transform):
+        total_x += float(match.group(1))
+        total_y += float(match.group(2) or 0.0)
+    return total_x, total_y
 
 
 def parse_viewbox(root: ET.Element) -> tuple[float, float]:
@@ -92,41 +120,52 @@ class TextNode:
         return len(self.text) * self.font_size * width_ratio(self.text, self.font_weight)
 
 
-def collect_rects(root: ET.Element) -> list[Rect]:
+@dataclass
+class TraversalState:
+    offset_x: float = 0.0
+    offset_y: float = 0.0
+
+
+def collect_rects(root: ET.Element, state: TraversalState | None = None) -> list[Rect]:
+    state = state or TraversalState()
     rects: list[Rect] = []
-    for node in root.iter():
-        if strip_ns(node.tag) != "rect":
-            continue
+    dx, dy = parse_translate(root.attrib.get("transform"))
+    next_state = TraversalState(state.offset_x + dx, state.offset_y + dy)
+    if strip_ns(root.tag) == "rect":
         rects.append(
             Rect(
-                x=parse_length(node.attrib.get("x")),
-                y=parse_length(node.attrib.get("y")),
-                width=parse_length(node.attrib.get("width")),
-                height=parse_length(node.attrib.get("height")),
+                x=parse_length(root.attrib.get("x")) + next_state.offset_x,
+                y=parse_length(root.attrib.get("y")) + next_state.offset_y,
+                width=parse_length(root.attrib.get("width")),
+                height=parse_length(root.attrib.get("height")),
             )
         )
+    for child in root:
+        rects.extend(collect_rects(child, next_state))
     return rects
 
 
-def collect_text_nodes(root: ET.Element) -> list[TextNode]:
+def collect_text_nodes(root: ET.Element, state: TraversalState | None = None) -> list[TextNode]:
+    state = state or TraversalState()
     nodes: list[TextNode] = []
-    for node in root.iter():
-        if strip_ns(node.tag) != "text":
-            continue
-        text = normalize_text("".join(node.itertext()))
-        if not text:
-            continue
-        nodes.append(
-            TextNode(
-                text=text,
-                x=parse_first_number(node.attrib.get("x")),
-                y=parse_first_number(node.attrib.get("y")),
-                font_size=parse_length(node.attrib.get("font-size"), 16.0),
-                font_weight=node.attrib.get("font-weight"),
-                anchor=node.attrib.get("text-anchor", "start"),
-                element=node,
+    dx, dy = parse_translate(root.attrib.get("transform"))
+    next_state = TraversalState(state.offset_x + dx, state.offset_y + dy)
+    if strip_ns(root.tag) == "text":
+        text = normalize_text("".join(root.itertext()))
+        if text:
+            nodes.append(
+                TextNode(
+                    text=text,
+                    x=parse_first_number(pick_attr(root, "x")) + next_state.offset_x,
+                    y=parse_first_number(pick_attr(root, "y")) + next_state.offset_y,
+                    font_size=parse_length(pick_attr(root, "font-size"), 16.0),
+                    font_weight=pick_attr(root, "font-weight"),
+                    anchor=pick_attr(root, "text-anchor", "start") or "start",
+                    element=root,
+                )
             )
-        )
+    for child in root:
+        nodes.extend(collect_text_nodes(child, next_state))
     return nodes
 
 

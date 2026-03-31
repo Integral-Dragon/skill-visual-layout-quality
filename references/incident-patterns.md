@@ -99,3 +99,17 @@ Recurring examples:
 Rule:
 
 - Final judgment belongs to the rendered artifact, not the editable source.
+
+## 8. Font Substitution Drift
+
+The source layout is built around one font, but the render environment silently uses another.
+
+Recurring examples:
+
+- slide decks and PDFs rendered on systems without the original font
+- exported artifacts where fallback fonts widened labels and collapsed padding
+- cross-tool flows where the source editor and export environment did not share the same typography stack
+
+Rule:
+
+- Treat font availability and fallback behavior as a first-class layout risk, especially for slides and PDFs.

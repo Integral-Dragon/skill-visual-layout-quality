@@ -69,13 +69,20 @@ Decorative elements are optional. Content is not.
 
 - Centering is judged visually, not only numerically.
 - Dot-and-label pairs, pills, badges, bullets, and icon rows frequently need optical correction after mathematical placement.
+- This principle usually has real force only during rendered QA. Do not pretend source coordinates alone can prove optical alignment.
 
 ### 6. Legibility Beats Palette Fidelity
 
 - If a color choice harms readability at the intended size, it fails.
 - Overlong lines, low-contrast labels, and compressed text blocks are layout problems, not just typography problems.
 
-### 7. Final Judgment Belongs To The Rendered Output
+### 7. Font Stability Matters
+
+- If the render environment substitutes a different font, re-check width, padding, line breaks, and alignment.
+- Font substitution is a first-class layout risk for slides, PDFs, SVGs, and exported diagrams.
+- A layout that depends on one exact font metric is fragile by default.
+
+### 8. Final Judgment Belongs To The Rendered Output
 
 - Do not trust source markup or scene structure as the final truth.
 - Judge the rendered artifact the user will actually see.
@@ -135,6 +142,12 @@ Use spacing bands, not ad hoc pixel nudges:
 
 Use an 8px rhythm where practical, but prioritize optical balance over rigid arithmetic.
 
+Use these as pixel-reference bands.
+
+- For points, multiply by roughly `0.75`
+- For inches, divide by `96`
+- For slide tools using inches or points, preserve the relative banding even when the units change
+
 ### 5. Protect content from decoration
 
 Decorative elements are allowed only if they do not compete with content.
@@ -163,38 +176,19 @@ For final-quality work, inspect the rendered output:
 
 If the user has not explicitly requested a final QA round, offer the optional validation round described below.
 
-## Non-Negotiable Cross-Format Rules
+## Operational Checks
 
-### Container Rules
+These are the concrete review checks derived from the universal principles above.
 
 - Text must not touch the visual edge of its container.
-- Internal padding must be consistent within the same component family.
-- A label that barely fits is treated as a failure; "inside the border" is not sufficient.
-- If one card in a row needs more padding or height, usually the whole row should be normalized.
-
-### Typography Rules
-
+- A label that barely fits is a failure even if it remains technically inside the border.
+- Internal padding should be consistent within a component family.
 - Body copy should usually stay within readable line lengths; as an accessibility bound, avoid lines longer than 80 characters when possible.
-- Use enough line height to prevent vertical crowding. Dense labels can go tighter; paragraphs should not.
-- ALL-CAPS text needs more width and more breathing room than mixed case.
-- Very light text on colored surfaces is a failure if it harms legibility, even if it matches the palette.
-
-### Rhythm Rules
-
-- Related elements should be grouped by smaller spacing than unrelated elements.
-- Titles need visibly more space below them than the space between sibling items within the section.
-- If a footer or bottom band feels glued to the section above it, increase the gap or reduce the footer prominence.
-
-### Collision Rules
-
+- ALL-CAPS text and substituted fonts need extra width and re-checking.
 - No object may obscure text.
-- No connector may cross a label unless the diagram form explicitly requires it and the label remains fully legible.
-- No decorative motif may sit in the same visual lane as important content.
-
-### Edge Safety Rules
-
+- No connector should cross a label unless the label remains fully legible and the diagram form truly requires it.
 - Important text or shapes should not ride the canvas edge.
-- Leave a stronger edge margin on assets meant for GitHub embeds, thumbnails, or slides viewed on shared screens.
+- If one card in a row needs materially more height or padding, re-evaluate the whole row for normalization.
 
 ## Optional Validation Round
 
@@ -216,7 +210,7 @@ Use a concise question such as:
 
 - the user explicitly asked for polish, QA, review, validation, or final export
 - the deliverable is client-facing or executive-facing
-- the asset is an SVG, PDF, slide, or Excalidraw export with positioned text
+- the asset is a final-quality SVG, PDF, slide, or Excalidraw export with positioned text
 - the request already includes phrases like "make sure it looks right", "check spacing", "inspect visually", or equivalent
 
 ### Time Estimation Heuristics
@@ -228,6 +222,7 @@ Use these rough bands before asking:
 - small deck or PDF `2-10 pages/slides`: `3-8 min`
 - medium deck or PDF `11-30 pages/slides`: `8-20 min`
 - large deck or PDF `30+ pages/slides`: `15-40+ min`
+- batch of separate image files: `1-2 min` per file plus setup/export time
 
 If exports are already available, estimate near the low end. If rendering tools, screenshots, or retries are needed, estimate near the high end.
 
