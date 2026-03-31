@@ -31,6 +31,7 @@ This version adds:
 - broader failure classes beyond overflow
 - a clean separation between universal principles and format-specific implementation guidance
 - slide deck and PDF validation guidance
+- a lightweight `scripts/pptx_pdf_layout_audit.py` helper for PPTX/PDF preflight parity
 - font substitution as a first-class layout risk
 - render-and-inspect workflow as a first-class requirement
 - optional second-pass visual validation with time estimation
@@ -55,6 +56,7 @@ skill-visual-layout-quality/
     review-round-2026-03-31.md
     validation-round.md
   scripts/
+    pptx_pdf_layout_audit.py
     svg_layout_audit.py
 ```
 
@@ -101,6 +103,32 @@ python3 scripts/svg_layout_audit.py path/to/file.svg
 ```
 
 This is a first-pass heuristic audit only. Final judgment should still come from the rendered output.
+
+Known limits:
+
+- only `translate(...)` transforms are resolved
+- container detection is bounding-box based
+- simple `path` containers are supported, but arbitrary bezier paths are not
+- text widths are estimated heuristically, not with real font metrics
+
+## PPTX / PDF Audit Script
+
+For slide decks and exported PDFs, you can run:
+
+```bash
+python3 scripts/pptx_pdf_layout_audit.py path/to/file.pptx
+python3 scripts/pptx_pdf_layout_audit.py path/to/file.pdf
+```
+
+What it does:
+
+- `.pptx`: checks aspect ratio, scans text frames, flags obvious overflow and font-fragility patterns
+- `.pdf`: checks metadata-level page count and page size via `pdfinfo`
+
+What it does not do:
+
+- it does not replace rendered thumbnail or page inspection
+- PDF support is preflight-only, not text-box-aware
 
 ## License
 

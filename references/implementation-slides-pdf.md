@@ -15,6 +15,7 @@ Decks and PDFs fail differently from SVGs:
 ## Practical Rules
 
 - Validate slide/page thumbnails or rendered images.
+- Use `python3 scripts/pptx_pdf_layout_audit.py file.pptx` or `file.pdf` as a lightweight preflight, not as a substitute for rendered review.
 - Check title-to-content spacing, footer safety, card padding, and z-order collisions.
 - Decorative shapes belong in margins or background layers only.
 - For decks, do not trust one clean slide; inspect the rendered set.
@@ -26,9 +27,10 @@ Decks and PDFs fail differently from SVGs:
 
 ## Validation Workflow
 
-1. Render thumbnails or export to PDF.
-2. Inspect rendered slides/pages.
-3. Look for:
+1. Run the lightweight preflight helper.
+2. Render thumbnails or export to PDF.
+3. Inspect rendered slides/pages.
+4. Look for:
    - title-to-body crowding
    - content too close to footer
    - decorative shapes crossing content
@@ -38,8 +40,8 @@ Decks and PDFs fail differently from SVGs:
    - master/template artifacts colliding with slide-specific content
    - wrong aspect ratio or letterboxing/cropping symptoms
    - blurry or under-scaled embedded images
-4. Fix the source deck.
-5. Re-render.
+5. Fix the source deck.
+6. Re-render.
 
 ## Specific Failure Modes
 
@@ -80,6 +82,14 @@ When in doubt:
 - re-check rendered output on the actual export machine
 - avoid designs that depend on one fragile custom font metric
 
+The helper script can only detect obvious font-fragility signals:
+
+- multiple fonts mixed inside one text frame
+- runs with no explicit font name
+- custom fonts outside a conservative portable-font list
+
+It cannot prove that the target machine has the required font installed.
+
 ### Visible Content Safe Zones
 
 Keep high-value content away from:
@@ -99,3 +109,12 @@ Keep high-value content away from:
 - replace fragile fonts or widen containers after font fallback
 - fix slide master residue instead of compensating on every slide
 - rebuild for the correct aspect ratio instead of stretching the layout
+
+## Helper Scope
+
+`scripts/pptx_pdf_layout_audit.py` is intentionally small:
+
+- `.pptx`: aspect ratio, text-frame density, obvious overflow risk, and font portability warnings
+- `.pdf`: metadata preflight only through `pdfinfo`
+
+It does not inspect rendered text positions inside PDFs. That still belongs to the rendered QA round.

@@ -13,6 +13,7 @@ This note captures the first external critique loop after the major rewrite.
 - Codex initial rating: `8/10`
 - Claude review rating: `7/10`
 - Codex revised rating after review: `7.5/10`
+- Claude follow-up review after the first refinement pass: `8/10`
 
 ## Claude's Main Findings
 
@@ -37,6 +38,15 @@ This note captures the first external critique loop after the major rewrite.
   - `style=` parsing
   - basic `translate()` handling
   - inherited transform offsets for nested groups
+
+## Claude Follow-Up Findings
+
+Claude's next review judged most structural issues addressed and called out four remaining priorities:
+
+1. add a minimal PPTX/PDF audit helper for parity with the SVG script
+2. add an explicit `Known Limitations` block to `svg_layout_audit.py`
+3. improve the SVG width heuristic for CJK and monospace text
+4. add limited path/container support if it can be done without major complexity
 
 ## Why This Note Exists
 

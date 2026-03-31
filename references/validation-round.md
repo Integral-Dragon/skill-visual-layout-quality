@@ -56,18 +56,20 @@ Increase the estimate when:
 
 ### Slides / PPTX
 
-1. Render thumbnails or export to PDF
-2. Inspect rendered slides, not only source shapes
-3. Look for title spacing, card padding, footer crowding, overlap, and legibility failures
-4. Repair in source deck
-5. Re-render and confirm
+1. Run `python3 scripts/pptx_pdf_layout_audit.py deck.pptx`
+2. Render thumbnails or export to PDF
+3. Inspect rendered slides, not only source shapes
+4. Look for title spacing, card padding, footer crowding, overlap, legibility failures, and font drift
+5. Repair in source deck
+6. Re-render and confirm
 
 ### PDF
 
-1. Render pages to images or inspect thumbnails
-2. For short PDFs, inspect every page
-3. For long PDFs, inspect all pages if stakes are high; otherwise inspect representative pages plus any flagged pages
-4. Repair source and re-render
+1. Run `python3 scripts/pptx_pdf_layout_audit.py file.pdf`
+2. Render pages to images or inspect thumbnails
+3. For short PDFs, inspect every page
+4. For long PDFs, inspect all pages if stakes are high; otherwise inspect representative pages plus any flagged pages
+5. Repair source and re-render
 
 ### Excalidraw
 

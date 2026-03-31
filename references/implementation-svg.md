@@ -25,9 +25,10 @@ python3 scripts/svg_layout_audit.py path/to/file.svg
 ```
 
 2. Treat the script as a first-pass heuristic audit only.
-3. Render the SVG to PNG or inspect it in the target renderer.
-4. Fix source layout issues.
-5. Re-render and re-check.
+3. Read the script header before trusting a clean pass. It documents the current transform and container-detection limits.
+4. Render the SVG to PNG or inspect it in the target renderer.
+5. Fix source layout issues.
+6. Re-render and re-check.
 
 ## Specific Implementation Risks
 
@@ -35,6 +36,8 @@ python3 scripts/svg_layout_audit.py path/to/file.svg
 - Multi-line text alignment can drift if line resets are not explicit.
 - Labels that "fit" in XML can still look cramped in render.
 - SVGs that are fine in one viewer can look wrong in README or browser embeds.
+- The audit script can now use simple `path`, `circle`, and `ellipse` bounding boxes as containers, but this is still a best-effort approximation.
+- If the file depends on `scale`, `rotate`, `matrix`, clipping masks, or complex bezier paths, prefer rendered inspection over heuristic confidence immediately.
 
 ## Typical Fixes
 
