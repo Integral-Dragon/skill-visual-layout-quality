@@ -1,202 +1,299 @@
 ---
 name: visual-layout-quality
-description: "Validates text layout in SVGs, HTML, and infographics against overflow, padding, and spacing rules. Use when creating or editing visual assets with text in bounding containers — SVGs, fixed-layout HTML, infographics, email templates. Trigger when the user creates, edits, or reviews any visual with positioned text."
+description: "Use when creating, editing, reviewing, or debugging visual assets where layout quality matters: SVGs, PNG/JPG-backed graphics, Excalidraw exports, diagrams, README hero images, fixed-layout HTML, infographics, slide decks, and PDFs. Focus on overflow, container sizing, internal padding, spacing rhythm, centering, collisions, clipping, legibility, and rendered-output QA."
 user-invocable: true
 ---
 
 # Visual Layout Quality
 
-Mandatory validation rules for every visual asset containing positioned text. Apply these checks whenever creating, editing, or reviewing SVGs, fixed-layout HTML, infographics, email templates, or any visual where text sits inside a bounding container.
+Use this skill for any visual artifact where layout can fail after generation, export, or rendering.
 
----
+This skill is intentionally split into two layers:
 
-## Character Width Safety Ratios
+- universal layout principles that apply across formats
+- format-specific implementation guidance for SVG, slides/PDFs, Excalidraw, and related surfaces
 
-Use these multipliers to estimate the rendered pixel width of a string. Multiply `font_size` by the ratio, then multiply by the character count.
+Keep the principles stable. Change the implementation layer when a tool or renderer behaves differently.
 
-| Weight / Style         | Ratio |
-|------------------------|-------|
-| Normal (400-500)       | 0.55  |
-| Bold (700-800)         | 0.60  |
-| ALL-CAPS normal        | 0.62  |
-| ALL-CAPS bold          | 0.67  |
+Read [incident-patterns.md](references/incident-patterns.md) when you want the generalized failure classes from local Codex and Claude history. Read [research-notes.md](references/research-notes.md) when you want the external basis for the principles below. Read [validation-round.md](references/validation-round.md) when you need the render-and-inspect workflow, time estimation, or PDF/slide guidance.
 
-**Estimated text width** = `char_count * font_size * ratio`
+For implementation details, read only the file that matches the current artifact:
 
----
+- [implementation-svg.md](references/implementation-svg.md)
+- [implementation-slides-pdf.md](references/implementation-slides-pdf.md)
+- [implementation-excalidraw.md](references/implementation-excalidraw.md)
 
-## Overflow Check Formula
+## Core Rule
 
-Run this check for **every** text element before finalising a visual.
+Do not treat source markup or scene data as the final truth.
 
-### Left-anchored text (text-anchor="start" or default)
+For final-quality work, judge the rendered output that the user will actually see:
 
-```
-text_x + (char_count * font_size * ratio) <= container_right_edge - padding
-```
+- exported PNG/JPG
+- rendered SVG
+- rendered PDF pages
+- slide thumbnails
+- Excalidraw export, not just the editable canvas
 
-### Center-anchored text (text-anchor="middle")
+## Universal Principles
 
-```
-estimated_width / 2 <= (container_width / 2) - padding
-```
+These rules should hold across formats unless a specific renderer forces an exception.
 
-### Right-anchored text (text-anchor="end")
+### 1. Content Outranks Decoration
 
-```
-text_x - estimated_width >= container_left_edge + padding
-```
+Decorative elements are optional. Content is not.
 
-If any check fails, the text will overflow. Shorten the text, reduce the font size, or widen the container.
+- If a shape, arrow, grid, glow, or accent competes with text, the decoration loses.
+- Background and decorative elements belong behind content in z-order.
+- Decorative motifs should live in margins, background bands, or clearly secondary lanes.
 
----
+### 2. Containers Must Fit Their Content
 
-## Max Characters Per Line — Quick Reference
+- If the copy grows, the container grows.
+- If the container cannot grow, shorten or split the copy.
+- A label that barely fits is treated as a failure.
 
-Common container widths at common font sizes, using 20px padding on each side (usable width = container - 40px) and normal weight (ratio 0.55).
+### 3. Padding Is Part Of The Design, Not Spare Space
 
-| Container | Usable | 13px | 14px | 15px | 16px | 18px | 20px | 22px |
-|-----------|--------|------|------|------|------|------|------|------|
-| 280px     | 240px  | 33   | 31   | 29   | 27   | 24   | 21   | 19   |
-| 306px     | 266px  | 37   | 34   | 32   | 30   | 26   | 24   | 21   |
-| 330px     | 290px  | 40   | 37   | 35   | 33   | 29   | 26   | 23   |
-| 414px     | 374px  | 52   | 48   | 45   | 42   | 37   | 34   | 30   |
-| 600px     | 560px  | 78   | 72   | 67   | 63   | 56   | 50   | 46   |
+- Text should not ride the border of a component.
+- Internal padding should be consistent within a component family.
+- Weak breathing room is a real defect even if no border is crossed.
 
-For bold text, multiply the max by `0.55 / 0.60 = 0.917` (subtract roughly 8%).
-For ALL-CAPS normal, multiply by `0.55 / 0.62 = 0.887` (subtract roughly 11%).
-For ALL-CAPS bold, multiply by `0.55 / 0.67 = 0.821` (subtract roughly 18%).
+### 4. Spacing Must Communicate Structure
 
----
+- Related elements get tighter spacing than unrelated elements.
+- Titles need more separation from the next section boundary than sibling items need from each other.
+- If all gaps are similar, hierarchy collapses.
 
-## Padding Rules (8px Grid)
+### 5. Optical Alignment Beats Raw Arithmetic
 
-All padding values align to an 8px grid for visual consistency.
+- Centering is judged visually, not only numerically.
+- Dot-and-label pairs, pills, badges, bullets, and icon rows frequently need optical correction after mathematical placement.
 
-| Token    | Value  | Use case                        |
-|----------|--------|---------------------------------|
-| pad-xs   | 8px    | Badge / pill text to edge       |
-| pad-sm   | 16px   | Tight card inset                |
-| pad-md   | 20px   | Standard card inset             |
-| pad-lg   | 32px   | Generous card inset             |
-| pad-xl   | 52px   | Canvas edge safety margin       |
-| gap-card | 16-24px| Space between adjacent cards    |
-| gap-line | ceil(font_size * 1.4) | Line-to-line vertical spacing |
+### 6. Legibility Beats Palette Fidelity
 
----
+- If a color choice harms readability at the intended size, it fails.
+- Overlong lines, low-contrast labels, and compressed text blocks are layout problems, not just typography problems.
 
-## Canvas Edge Safety
+### 7. Final Judgment Belongs To The Rendered Output
 
-Every visible element must respect canvas edge margins:
+- Do not trust source markup or scene structure as the final truth.
+- Judge the rendered artifact the user will actually see.
 
-```
-x >= 52
-x + width <= canvas_width - 52
-y >= font_size + 20
-y <= canvas_height - 20
-```
+## Format Choice
 
-These margins prevent text from clipping at the edges of the rendered viewport and provide breathing room when the asset is embedded in a page.
+Choose the final delivery format based on the target surface, not ideology.
 
----
+- For GitHub READMEs, static embeds, and other hostile or inconsistent renderers, prefer PNG/JPG as the final delivery unless vector behavior is required and verified.
+- SVG is acceptable as a source artifact when it materially improves editability, but do not rely on it as the only final output unless you validated the actual target renderer.
+- For slide decks and PDFs, validate the rendered pages or thumbnails, not just the source `.pptx`, `.drawio`, `.excalidraw`, or SVG fragment.
 
-## Multi-line Text Rules
+## Required Workflow
 
-SVG has **no automatic text wrapping**. You must handle line breaks manually.
+Follow this order. Do not skip the rendered-output step for final assets.
 
-- Use `<tspan>` elements or separate `<text>` elements for each line.
-- **Repeat the `x` attribute** on every `<tspan>` to reset the horizontal position.
-- Set `dy` for vertical line spacing: `dy = ceil(font_size * 1.4)`
+### 1. Define the viewing context
 
-Example:
-```xml
-<text x="60" y="100" font-size="16" fill="#1a1a2e">
-  <tspan x="60" dy="0">First line of text here</tspan>
-  <tspan x="60" dy="23">Second line continues here</tspan>
-  <tspan x="60" dy="23">Third line wraps manually</tspan>
-</text>
-```
+Identify:
 
----
+- final surface: README, browser, PDF, slide deck, doc, image export
+- viewing size: thumbnail, embedded width, full slide, print, mobile
+- stakes: draft, internal review, client-facing, executive-facing
 
-## Adjacent Element Collision
+Layout that barely works at full resolution often fails at embed size or in print thumbnails.
 
-When placing elements near each other, enforce minimum gaps:
+### 2. Build the content hierarchy first
 
-**Horizontal adjacency:**
-```
-right_element_x >= left_element_x + left_element_width + 16
-```
+Before adjusting pixels, classify content into:
 
-**Vertical adjacency:**
-```
-lower_element_y >= upper_element_y + ceil(font_size * 1.4)
-```
+- primary headline
+- secondary support text
+- metadata or stats
+- grouped detail
+- decoration
 
-These minimums prevent visual crowding and ensure readability at standard zoom levels.
+If too many elements behave like primary elements, the asset will feel crowded even if nothing overlaps.
 
----
+### 3. Size from content outward
 
-## Pre-commit Layout Checklist
+Containers must be sized from the content they hold.
 
-Run through this checklist before finalising any visual asset:
+- If the copy grows, the box grows.
+- If the box cannot grow, shorten or split the copy.
+- Do not force-fit multi-word labels into pills, buttons, badges, or cards without checking the rendered result.
 
-- [ ] Every text element has been checked against the overflow formula
-- [ ] Padding is consistent within each container (using pad-* tokens)
-- [ ] Canvas edge safety margins are respected (52px horizontal, font_size+20 / 20px vertical)
-- [ ] Multi-line text uses explicit tspan with repeated x and correct dy
-- [ ] Adjacent elements have at least 16px horizontal / 1.4em vertical gap
-- [ ] Bold and ALL-CAPS text uses the correct (wider) ratio
-- [ ] Font sizes are readable at intended display size (minimum 12px for body text)
-- [ ] No text element extends beyond its parent container
+### 4. Apply spacing as a system
 
----
+Use spacing bands, not ad hoc pixel nudges:
 
-## SVG-Specific Rules
+- `8-12px`: tight internal separation inside chips, pills, icon-label pairs
+- `12-16px`: dense card internals
+- `16-24px`: standard card padding and related element gaps
+- `24-32px`: separation between cards or sub-sections
+- `32-64px`: major section spacing
+- `48-64px`: canvas edge safety for medium and large graphics
 
-- **Always set explicit `width`, `height`, and `viewBox`** on the root `<svg>` element.
-- **No `<foreignObject>`** — it breaks GitHub README rendering and many SVG consumers.
-- **Font family fallback chain** — always end with a generic family:
-  ```
-  font-family="Inter, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
-  ```
-- **Extend filter regions** for shadows and glows — set `x="-50%" y="-50%" width="200%" height="200%"` on `<filter>` elements to prevent clipping of blur effects.
+Use an 8px rhythm where practical, but prioritize optical balance over rigid arithmetic.
 
----
+### 5. Protect content from decoration
 
-## HTML / Infographic Rules
+Decorative elements are allowed only if they do not compete with content.
 
-The same character width ratios and overflow formulas apply to:
+- Keep accent bars, glows, grids, and shape motifs in margins or background layers.
+- Put background and decorative shapes behind content in z-order.
+- Arrows and connectors must terminate at the edge of the target object, not intrude into it.
+- Do not let callout circles, shadows, or workflow arrows cross through labels.
 
-- Fixed-width HTML layouts (email templates, embedded widgets)
-- PDF generation from HTML
-- Infographic creation tools
-- Any context where text is placed in a container of known pixel width
+### 6. Validate optical alignment
 
-**Core principle:** Compute the estimated text width using the ratios above, then compare to the container width minus padding on both sides. If it does not fit, adjust before rendering.
+Do not trust mathematical center alone.
 
----
+- Dots, icons, bullets, and text labels must look centered as a group.
+- Rounded-rectangle labels often need small optical adjustments even when numerically centered.
+- If the element feels off by eye, correct it even if the numbers match.
 
-## When to Use
+### 7. Render and inspect
 
-Invoke this skill in these situations:
+For final-quality work, inspect the rendered output:
 
-- **`/visual-layout-quality`** — validate the current file against all rules
-- **`/visual-layout-quality path/to/file.svg`** — validate a specific file
-- **Creating new SVGs** — this skill auto-triggers when you create or edit SVGs, fixed-layout HTML, or infographics
-- **Reviewing visual diffs** — check whether a change introduces overflow or spacing violations
-- **Debugging clipped text** — when text appears cut off in a rendered visual, run the overflow check to find the violation
+- SVG: render to PNG or open the rendered SVG in the actual target viewer
+- PDF: render pages to images or thumbnails
+- slides: render thumbnails or export to PDF and inspect pages
+- Excalidraw: export the scene and inspect the export, not only the live editor
 
----
+If the user has not explicitly requested a final QA round, offer the optional validation round described below.
 
-## Validation Process
+## Non-Negotiable Cross-Format Rules
 
-When validating a visual asset, follow this sequence:
+### Container Rules
 
-1. **Identify all text elements** and their parent containers (rect, card, section, or canvas).
-2. **Compute estimated width** for each text element using the character width ratios.
-3. **Check against container bounds** using the appropriate overflow formula (left/center/right anchored).
-4. **Verify padding consistency** within each container — all text should use the same pad-* token.
-5. **Check canvas edge safety margins** — no element should violate the 52px horizontal or vertical margin rules.
-6. **Check adjacent element spacing** — verify minimum gaps between neighbouring elements.
-7. **Report violations** with the estimated width vs. available width, and suggest a fix (shorter text, smaller font, wider container).
+- Text must not touch the visual edge of its container.
+- Internal padding must be consistent within the same component family.
+- A label that barely fits is treated as a failure; "inside the border" is not sufficient.
+- If one card in a row needs more padding or height, usually the whole row should be normalized.
+
+### Typography Rules
+
+- Body copy should usually stay within readable line lengths; as an accessibility bound, avoid lines longer than 80 characters when possible.
+- Use enough line height to prevent vertical crowding. Dense labels can go tighter; paragraphs should not.
+- ALL-CAPS text needs more width and more breathing room than mixed case.
+- Very light text on colored surfaces is a failure if it harms legibility, even if it matches the palette.
+
+### Rhythm Rules
+
+- Related elements should be grouped by smaller spacing than unrelated elements.
+- Titles need visibly more space below them than the space between sibling items within the section.
+- If a footer or bottom band feels glued to the section above it, increase the gap or reduce the footer prominence.
+
+### Collision Rules
+
+- No object may obscure text.
+- No connector may cross a label unless the diagram form explicitly requires it and the label remains fully legible.
+- No decorative motif may sit in the same visual lane as important content.
+
+### Edge Safety Rules
+
+- Important text or shapes should not ride the canvas edge.
+- Leave a stronger edge margin on assets meant for GitHub embeds, thumbnails, or slides viewed on shared screens.
+
+## Optional Validation Round
+
+This skill supports an optional second-pass visual validation round.
+
+When the model believes the asset is done, it should estimate how long a render-and-inspect pass will take and ask whether to run it, unless one of the auto-run conditions below is met.
+
+### Ask Before Running When
+
+- the asset is still an intermediate draft
+- the validation round will materially slow the request
+- the artifact count is large enough that the user may want to trade quality for time
+
+Use a concise question such as:
+
+`I can do a rendered QA pass on the exported asset. Estimated time: 3-6 minutes for this file. Want me to run it?`
+
+### Auto-Run Without Asking When
+
+- the user explicitly asked for polish, QA, review, validation, or final export
+- the deliverable is client-facing or executive-facing
+- the asset is an SVG, PDF, slide, or Excalidraw export with positioned text
+- the request already includes phrases like "make sure it looks right", "check spacing", "inspect visually", or equivalent
+
+### Time Estimation Heuristics
+
+Use these rough bands before asking:
+
+- single SVG, PNG, JPG, or simple diagram: `1-3 min`
+- single PDF page or single slide: `1-3 min`
+- small deck or PDF `2-10 pages/slides`: `3-8 min`
+- medium deck or PDF `11-30 pages/slides`: `8-20 min`
+- large deck or PDF `30+ pages/slides`: `15-40+ min`
+
+If exports are already available, estimate near the low end. If rendering tools, screenshots, or retries are needed, estimate near the high end.
+
+### What the Validation Round Must Do
+
+1. Export or render the actual output.
+2. Inspect the rendered pages or images.
+3. Check the rendered output against this skill's rules, not just the source file.
+4. Repair issues and re-render when needed.
+5. Report whether the artifact passed and what was corrected.
+
+Read [validation-round.md](references/validation-round.md) for the exact format-specific workflow.
+
+## Implementation Layer
+
+Do not overload the main principles with renderer-specific tactics.
+
+Use:
+
+- [implementation-svg.md](references/implementation-svg.md) for SVG and fixed-layout HTML
+- [implementation-slides-pdf.md](references/implementation-slides-pdf.md) for slide decks and PDFs
+- [implementation-excalidraw.md](references/implementation-excalidraw.md) for Excalidraw
+
+## Reporting Failures
+
+When you find problems, classify them using failure classes instead of vague statements:
+
+- `container-copy mismatch`
+- `padding collapse`
+- `optical misalignment`
+- `decorative intrusion`
+- `section rhythm collapse`
+- `edge clipping risk`
+- `contrast / legibility failure`
+- `render drift`
+
+Report the visible symptom and the structural fix.
+
+Prefer:
+
+- `Delivery band headline collides with support line because the band is too short for the copy. Increase band height or split the copy.`
+
+Not:
+
+- `Spacing looks a little off.`
+
+## Repair Strategy
+
+When a layout fails, repair in this order:
+
+1. remove or demote decorative interference
+2. resize the container
+3. adjust spacing bands
+4. rewrite or split copy
+5. reduce type size only if the hierarchy still holds
+
+Do not use font-size reduction as the first fix unless the artifact is clearly oversized overall.
+
+## What This Skill Is For
+
+Invoke this skill for:
+
+- README hero graphics
+- SVG diagrams and infographics
+- PNG or JPG marketing graphics with positioned text
+- fixed-layout HTML destined for image or PDF export
+- slide decks and PDF exports
+- Excalidraw diagrams and exported boards
+- visual QA after generation or before final delivery

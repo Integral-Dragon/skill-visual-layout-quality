@@ -1,64 +1,103 @@
-# Visual Layout Quality — Claude Code Skill
+# Visual Layout Quality
 
-A Claude Code skill that validates text layout in SVGs, HTML, and infographics against overflow, padding, and spacing rules.
+A reusable visual QA skill for layout-heavy assets.
 
-## What It Does
+It is designed to catch the failure modes that repeatedly show up in generated visuals:
 
-When you create or edit visual assets that contain positioned text — SVGs, fixed-layout HTML, infographics, email templates — this skill checks for:
+- text that technically fits but feels cramped
+- internal padding collapse
+- containers that do not grow with copy
+- arrows, accents, and overlays intruding into content
+- weak spacing rhythm between sections
+- source files that look fine but rendered output that does not
 
-- **Text overflow**: estimates rendered text width and verifies it fits within its container
-- **Padding consistency**: enforces an 8px-grid padding system across all containers
-- **Canvas edge safety**: ensures no elements are clipped at viewport edges
-- **Element collision**: checks spacing between adjacent elements
-- **Multi-line correctness**: validates tspan usage, repeated x attributes, and line spacing in SVGs
-- **SVG best practices**: viewBox presence, no foreignObject, font fallback chains, filter region sizing
+## Scope
 
-The skill uses character width safety ratios derived from real font metrics (Arial xAvgCharWidth) with safety margins for mixed case, bold, and ALL-CAPS text.
+The skill is intended for:
+
+- SVG graphics
+- PNG/JPG-backed visuals with positioned text
+- README hero graphics
+- fixed-layout HTML and infographics
+- Excalidraw exports
+- slide decks and PDFs
+
+## What Changed From The Original Version
+
+The original skill was mostly an SVG overflow checker with width math.
+
+This version adds:
+
+- broader failure classes beyond overflow
+- a clean separation between universal principles and format-specific implementation guidance
+- slide deck and PDF validation guidance
+- render-and-inspect workflow as a first-class requirement
+- optional second-pass visual validation with time estimation
+- Excalidraw export guidance
+- a lightweight `scripts/svg_layout_audit.py` script for first-pass SVG checks
+- reference material split by incident patterns, external guidance, and validation workflow
+
+## Repo Layout
+
+```text
+skill-visual-layout-quality/
+  SKILL.md
+  reference.md
+  references/
+    incident-patterns.md
+    implementation-excalidraw.md
+    implementation-slides-pdf.md
+    implementation-svg.md
+    research-notes.md
+    validation-round.md
+  scripts/
+    svg_layout_audit.py
+```
 
 ## Installation
 
-### User-level (available in all projects)
+### Claude Code
+
+Personal:
 
 ```bash
 git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git ~/.claude/skills/visual-layout-quality
 ```
 
-### Project-level (available to all contributors on a specific project)
+Project-level:
 
 ```bash
 git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git .claude/skills/visual-layout-quality
 ```
 
-Then add `.claude/skills/visual-layout-quality` to your `.gitignore` if you do not want to vendor the skill into the project repo, or commit it if you want everyone on the project to have it.
+### Codex
 
-## Usage
+Local install:
 
-### Direct invocation
-
-```
-/visual-layout-quality
+```bash
+git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git ~/.codex/skills/visual-layout-quality
 ```
 
-Validates the current file against all layout rules.
+## Usage Notes
 
+Use the skill when generating, reviewing, or debugging any visual artifact where layout quality matters.
+
+The skill now supports an optional second-pass rendered QA round:
+
+- it estimates how long the extra validation will take
+- it asks before running it unless the task is clearly final/polish/QA work
+- it validates the rendered output, not just the source asset
+
+## SVG Audit Script
+
+For SVGs, you can run:
+
+```bash
+python3 scripts/svg_layout_audit.py path/to/file.svg
 ```
-/visual-layout-quality path/to/file.svg
-```
 
-Validates a specific file.
-
-### Auto-triggering
-
-The skill auto-triggers when Claude Code detects that you are creating, editing, or reviewing any visual asset with positioned text.
-
-### During reviews
-
-When reviewing visual diffs or debugging clipped text, invoke the skill to get a report of all layout violations with estimated vs. available widths and suggested fixes.
-
-## Reference
-
-See [reference.md](reference.md) for the full derivation of character width ratios, font metrics tables, textLength/lengthAdjust guidance, and common container width reference data.
+This is a first-pass heuristic audit only. Final judgment should still come from the rendered output.
 
 ## License
 
-MIT -- see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
