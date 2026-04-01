@@ -47,7 +47,7 @@ That meant the collaboration started with live context instead of from a cold pr
 
 ### 1. The real issue was deeper than the immediate skill
 
-The visual-layout-quality effort started as a skill problem, but Hopper recognized it was also:
+The visual-asset-layout effort started as a skill problem, but Hopper recognized it was also:
 
 - a workflow problem
 - a context-capture problem
@@ -144,7 +144,7 @@ This note is upstream of the tactical review notes.
 
 The first use surfaced several follow-on items that should not be lost:
 
-- rename or tighten the name of the visual-layout-quality skill
+- rename or tighten the name of the visual-asset-layout skill
 - decide whether a thin orchestrator skill should load layered skills instead of merging them
 - improve persistent cross-harness logging so participants can recover the actual interaction trail
 - revisit high-effort versus multi-pass execution as a reusable decision rule

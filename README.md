@@ -1,4 +1,4 @@
-# Visual Layout Quality
+# Visual Asset Layout
 
 A reusable visual build-and-review skill for layout-heavy assets.
 
@@ -43,7 +43,7 @@ This version adds:
 ## Repo Layout
 
 ```text
-skill-visual-layout-quality/
+visual-asset-layout/
   SKILL.md
   reference.md
   references/
@@ -68,13 +68,13 @@ skill-visual-layout-quality/
 Personal:
 
 ```bash
-git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git ~/.claude/skills/visual-layout-quality
+git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git ~/.claude/skills/visual-asset-layout
 ```
 
 Project-level:
 
 ```bash
-git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git .claude/skills/visual-layout-quality
+git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git .claude/skills/visual-asset-layout
 ```
 
 ### Codex
@@ -82,7 +82,7 @@ git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git .cl
 Local install:
 
 ```bash
-git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git ~/.codex/skills/visual-layout-quality
+git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git ~/.codex/skills/visual-asset-layout
 ```
 
 ## Usage Notes
