@@ -48,6 +48,14 @@ visual-asset-layout/
   SKILL.md
   reference.md
   requirements.txt
+  future_enhancements/
+    README.md
+    Dex/
+      001-current-ideas.md
+    Hopper/
+      README.md
+    Max/
+      README.md
   references/
     incident-patterns.md
     implementation-excalidraw.md
