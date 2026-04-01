@@ -69,3 +69,46 @@ Scores:
 - Effort: `4`
 - Uncertainty: `3`
 - Impact: `5`
+
+## 3. Shared example bank for periodic skill refinement
+
+When background QA finds a real layout defect and fixes it, store the case in a shared example bank instead of immediately mutating the skill.
+
+The bank would capture things like:
+
+- original asset or reduced repro
+- what failed in the rendered output
+- what fix resolved it
+- whether the failure was format-specific or general
+- whether it looks like a recurring class or a one-off edge case
+
+Desired behavior:
+
+- do not rewrite the skill every time a single failure occurs
+- accumulate evidence over time
+- periodically review the bank and only generalize where the pattern is real
+
+Why it matters:
+
+- direct per-failure updates can make the skill brittle or overfit weird cases
+- a bank of real examples creates a better basis for:
+  - new failure classes
+  - improved test fixtures
+  - better heuristics
+  - better implementation guidance
+
+Current Dex read:
+
+- this is a very good governance mechanism for the skill
+- especially valuable if background QA/remediation becomes common
+- best implemented as a triage layer:
+  - capture
+  - cluster
+  - periodically review
+  - promote only stable patterns into the core skill
+
+Scores:
+
+- Effort: `3`
+- Uncertainty: `2`
+- Impact: `5`
