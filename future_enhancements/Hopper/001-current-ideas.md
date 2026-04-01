@@ -112,3 +112,45 @@ Scores:
 - Effort: `3`
 - Uncertainty: `2`
 - Impact: `5`
+
+## 4. Low-fidelity layout mode before full polish
+
+Add a low-fidelity mode for early layout work:
+
+- rough wireframe or paper-prototype style composition
+- minimal styling
+- fast spacing and hierarchy checks
+- quick approval of structure before expensive polish/export work
+
+Then, once the low-fidelity layout looks right:
+
+- the main thread or a background worker can apply the full visual treatment
+- background QA can inspect the polished version
+- only the final pass pays the full rendering and validation cost
+
+Why it matters:
+
+- layout failures are often visible before visual polish matters
+- this could shorten the feedback loop for:
+  - card sizing
+  - spacing rhythm
+  - hierarchy
+  - overflow risk
+- it also has standalone value as a design workflow, even if time savings are only moderate
+
+Current Dex read:
+
+- strong idea
+- probably best expressed as an operating mode of the skill rather than a separate skill
+- especially useful for slides, infographics, README heroes, and diagram-like assets
+- combines well with background QA:
+  - low-fi first
+  - approve structure quickly
+  - polish in parallel
+  - validate rendered output after
+
+Scores:
+
+- Effort: `3`
+- Uncertainty: `2`
+- Impact: `4`
