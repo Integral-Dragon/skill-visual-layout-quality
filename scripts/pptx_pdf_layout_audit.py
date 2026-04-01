@@ -9,6 +9,9 @@ This script is intentionally lightweight.
 - `.pdf` support is metadata-level only via `pdfinfo`: page count, page size,
   and aspect-ratio drift. It does not inspect rendered text frames inside the
   PDF.
+- if a PPTX run does not carry an explicit font size, the script falls back to
+  a simple 18pt/20pt heuristic based on shape height. That is good enough for
+  preflight warnings, but theme-level sizes can still make the estimate wrong.
 
 Final judgment still belongs to rendered thumbnails or page images.
 """
@@ -21,9 +24,6 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-
-from pptx import Presentation
-from pptx.enum.shapes import MSO_SHAPE_TYPE
 
 EMU_PER_PT = 12700
 SAFE_PORTABLE_FONTS = {
@@ -123,11 +123,11 @@ def aspect_label(width: float, height: float) -> str:
     return f"custom ({ratio:.2f}:1)"
 
 
-def iter_shapes(shapes):
+def iter_shapes(shapes, group_type):
     for shape in shapes:
         yield shape
-        if shape.shape_type == MSO_SHAPE_TYPE.GROUP:
-            yield from iter_shapes(shape.shapes)
+        if shape.shape_type == group_type:
+            yield from iter_shapes(shape.shapes, group_type)
 
 
 @dataclass
@@ -203,6 +203,14 @@ def audit_text_frame(slide_number: int, shape) -> TextFrameAudit | None:
 
 
 def audit_pptx(path: Path) -> int:
+    try:
+        from pptx import Presentation
+        from pptx.enum.shapes import MSO_SHAPE_TYPE
+    except ImportError:
+        print(path)
+        print("  - python-pptx is not installed; install dependencies with `pip install -r requirements.txt`")
+        return 1
+
     prs = Presentation(path)
     width_pt = emu_to_pt(prs.slide_width)
     height_pt = emu_to_pt(prs.slide_height)
@@ -220,7 +228,7 @@ def audit_pptx(path: Path) -> int:
     inherited_font_frames = 0
 
     for slide_number, slide in enumerate(prs.slides, start=1):
-        for shape in iter_shapes(slide.shapes):
+        for shape in iter_shapes(slide.shapes, MSO_SHAPE_TYPE.GROUP):
             audit = audit_text_frame(slide_number, shape)
             if audit is None:
                 continue

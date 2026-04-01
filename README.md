@@ -39,6 +39,7 @@ This version adds:
 - a lightweight `scripts/svg_layout_audit.py` script for first-pass SVG checks
 - reference material split by incident patterns, external guidance, and validation workflow
 - a checked-in review-round note capturing Claude/Codex/user iteration
+- lightweight smoke tests for SVG and PPTX audit behavior
 
 ## Repo Layout
 
@@ -46,19 +47,24 @@ This version adds:
 visual-asset-layout/
   SKILL.md
   reference.md
+  requirements.txt
   references/
-    brain-trust-collaboration-loop.md
-    brain-trust-origin-2026-03-31.md
     incident-patterns.md
     implementation-excalidraw.md
     implementation-slides-pdf.md
     implementation-svg.md
-    review-round-2026-03-31.md
     research-notes.md
     validation-round.md
+  meta/
+    brain-trust-collaboration-loop.md
+    brain-trust-origin-2026-03-31.md
+    review-round-2026-03-31.md
   scripts/
     pptx_pdf_layout_audit.py
     svg_layout_audit.py
+  tests/
+    fixtures/svg/
+    run_smoke_tests.py
 ```
 
 ## Installation
@@ -83,6 +89,12 @@ Local install:
 
 ```bash
 git clone https://github.com/Integral-Dragon/skill-visual-layout-quality.git ~/.codex/skills/visual-asset-layout
+```
+
+Dependencies for the PPTX helper:
+
+```bash
+pip install -r requirements.txt
 ```
 
 ## Usage Notes
@@ -130,6 +142,20 @@ What it does not do:
 
 - it does not replace rendered thumbnail or page inspection
 - PDF support is preflight-only, not text-box-aware
+
+## Smoke Tests
+
+Run:
+
+```bash
+python3 tests/run_smoke_tests.py
+```
+
+This checks:
+
+- known-good and known-bad SVG fixtures
+- generated known-good and known-bad PPTX fixtures
+- expected pass/fail exit behavior of both audit scripts
 
 ## License
 
