@@ -9,6 +9,7 @@ This repo now keeps detailed references in `references/`.
 - [references/implementation-slides-pdf.md](references/implementation-slides-pdf.md)
 - [references/implementation-excalidraw.md](references/implementation-excalidraw.md)
 - [references/review-round-2026-03-31.md](references/review-round-2026-03-31.md)
-- [references/multi-agent-collaboration-loop.md](references/multi-agent-collaboration-loop.md)
+- [references/brain-trust-collaboration-loop.md](references/brain-trust-collaboration-loop.md)
+- [references/brain-trust-origin-2026-03-31.md](references/brain-trust-origin-2026-03-31.md)
 
 The main usage rules live in [SKILL.md](SKILL.md).
