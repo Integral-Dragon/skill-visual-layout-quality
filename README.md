@@ -54,6 +54,7 @@ visual-asset-layout/
       001-current-ideas.md
     Hopper/
       README.md
+      001-current-ideas.md
     Max/
       README.md
   references/
