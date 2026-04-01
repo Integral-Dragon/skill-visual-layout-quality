@@ -28,3 +28,44 @@ Scores:
 - Effort: `4`
 - Uncertainty: `4`
 - Impact: `3`
+
+## 2. Background sub-agent QA and repair loop
+
+Allow the main asset-generation thread to apply the skill prescriptively during composition, then spin up background sub-agents to:
+
+- render the output
+- inspect it against the layout rules
+- report findings back quickly
+- fix issues in parallel when the failures are straightforward
+
+Desired behavior:
+
+- Hopper does not wait idly for a full serial QA pass
+- sub-agents can validate or remediate while the main thread moves on
+- only meaningful problems or final reconciliations need to come back to the main thread
+
+Why it matters:
+
+- elapsed wall-clock time matters more than token efficiency here
+- this fits the actual usage pattern of the skill:
+  - build first
+  - inspect rendered output
+  - repair if needed
+- it could turn the optional validation round into something that feels much less expensive to Hopper
+
+Current Dex read:
+
+- conceptually strong
+- most useful once the rendered-QA path is more tool-backed and standardized
+- best version is probably:
+  - main thread generates asset
+  - background worker renders/inspects
+  - worker auto-fixes only bounded issues
+  - main thread reconciles the final state
+- biggest uncertainty is not model behavior; it is workflow design and write-scope safety
+
+Scores:
+
+- Effort: `4`
+- Uncertainty: `3`
+- Impact: `5`
