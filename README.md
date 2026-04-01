@@ -47,13 +47,14 @@ skill-visual-layout-quality/
   SKILL.md
   reference.md
   references/
+    brain-trust-collaboration-loop.md
+    brain-trust-origin-2026-03-31.md
     incident-patterns.md
     implementation-excalidraw.md
     implementation-slides-pdf.md
     implementation-svg.md
-    research-notes.md
-    multi-agent-collaboration-loop.md
     review-round-2026-03-31.md
+    research-notes.md
     validation-round.md
   scripts/
     pptx_pdf_layout_audit.py

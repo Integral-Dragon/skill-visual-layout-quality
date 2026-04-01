@@ -48,6 +48,29 @@ Claude's next review judged most structural issues addressed and called out four
 3. improve the SVG width heuristic for CJK and monospace text
 4. add limited path/container support if it can be done without major complexity
 
+## Current State After The Follow-Up Pass
+
+Those four priorities are now addressed to a practical first version:
+
+1. `scripts/pptx_pdf_layout_audit.py` exists and provides lightweight parity for slides and PDFs
+2. `scripts/svg_layout_audit.py` now has an explicit `Known limitations` block in the script header
+3. the SVG width heuristic now treats CJK and monospace text differently from default Latin text
+4. the SVG audit now includes limited bounding-box support for:
+   - `rect`
+   - `circle`
+   - `ellipse`
+   - simple closed `path` containers built from line commands
+
+This does not mean the tooling is complete.
+
+The scripts are still intentionally heuristic:
+
+- SVG support is not transform-complete and is not font-metric accurate
+- PDF support is still metadata-level only and does not inspect actual rendered text frames
+- rendered thumbnails or exported page/image inspection still outrank script output
+
+The practical result is that the repo now feels structurally finished enough for another external review round.
+
 ## Why This Note Exists
 
 The point is not just to preserve praise or criticism. The point is to preserve:
