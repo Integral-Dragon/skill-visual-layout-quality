@@ -1,5 +1,7 @@
 # Dex Ideas
 
+These scores were normalized after the first Hopper backlog pass so they mean the same thing across the combined list, not just inside the original Dex file.
+
 ## 1. Rendered QA helper for exported assets
 
 Build a small helper that standardizes:
@@ -17,8 +19,8 @@ Why it matters:
 Scores:
 
 - Effort: `4`
-- Uncertainty: `4`
-- Impact: `5`
+- Uncertainty: `3`
+- Impact: `4`
 
 ## 2. PDF text-box preflight beyond `pdfinfo`
 
@@ -37,7 +39,7 @@ Scores:
 
 - Effort: `3`
 - Uncertainty: `3`
-- Impact: `4`
+- Impact: `3`
 
 ## 3. Better SVG multiline text handling
 
@@ -52,7 +54,7 @@ Scores:
 
 - Effort: `2`
 - Uncertainty: `2`
-- Impact: `3`
+- Impact: `2`
 
 ## 4. Broader fixture coverage
 
@@ -71,7 +73,7 @@ Scores:
 
 - Effort: `3`
 - Uncertainty: `2`
-- Impact: `4`
+- Impact: `3`
 
 ## 5. Rename the GitHub repo slug
 
@@ -86,4 +88,4 @@ Scores:
 
 - Effort: `1`
 - Uncertainty: `1`
-- Impact: `2`
+- Impact: `1`
