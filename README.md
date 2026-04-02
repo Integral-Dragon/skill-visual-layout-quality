@@ -57,6 +57,7 @@ visual-asset-layout/
       001-current-ideas.md
     Max/
       README.md
+      001-review-2026-04-02.md
   references/
     incident-patterns.md
     implementation-excalidraw.md

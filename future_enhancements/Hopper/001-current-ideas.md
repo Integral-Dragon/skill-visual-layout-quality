@@ -26,8 +26,8 @@ Current Dex read:
 Scores:
 
 - Effort: `4`
-- Uncertainty: `4`
-- Impact: `3`
+- Uncertainty: `5`
+- Impact: `2`
 
 ## 2. Background sub-agent QA and repair loop
 
@@ -67,7 +67,7 @@ Current Dex read:
 Scores:
 
 - Effort: `4`
-- Uncertainty: `3`
+- Uncertainty: `4`
 - Impact: `5`
 
 ## 3. Shared example bank for periodic skill refinement
@@ -111,7 +111,7 @@ Scores:
 
 - Effort: `3`
 - Uncertainty: `2`
-- Impact: `5`
+- Impact: `4`
 
 ## 4. Low-fidelity layout mode before full polish
 

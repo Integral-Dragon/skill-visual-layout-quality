@@ -54,7 +54,7 @@ Scores:
 
 - Effort: `2`
 - Uncertainty: `2`
-- Impact: `2`
+- Impact: `3`
 
 ## 4. Broader fixture coverage
 
